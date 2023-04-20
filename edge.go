@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/longbai/xiaobot/edgetts"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"math/rand"
@@ -70,7 +69,6 @@ func (t *EdgeTTS) NewConn() error {
 		dialer := &net.Dialer{}
 		dl.NetDial = func(network, addr string) (net.Conn, error) {
 			if addr == "speech.platform.bing.com:443" {
-				rand.Seed(time.Now().Unix())
 				i := rand.Intn(len(edgeChinaIpList))
 				addr = fmt.Sprintf("%s:443", edgeChinaIpList[i])
 			}
@@ -277,10 +275,9 @@ func CreateStyleSSML(text, voiceName, style string) string {
 }
 
 func (t *EdgeTTS) TextToMp3(text string, ttsLang string, filePath string) error {
-	ttsEdge := edgetts.TTS{}
 	ssml := CreateSSML(text, ttsLang)
 	log.Println(ssml)
-	b, err := ttsEdge.GetAudio(ssml, voiceFormat)
+	b, err := t.GetAudio(ssml, voiceFormat)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		return err
